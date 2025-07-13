@@ -5,7 +5,7 @@ Main sloptimize functionality
 import os
 from typing import Dict, Any, List, Optional
 import pydantic
-import weave
+# import weave
 
 from .environment import LLM_PROVIDER
 from .llm import openai_client, grok_client
@@ -81,7 +81,7 @@ def _get_system_prompt() -> str:
         return f.read()
 
 
-@weave.op()
+# @weave.op()
 def sloptimize(code: str) -> SloptimizeResult:
     """
     Analyze and optimize the provided code
@@ -121,4 +121,4 @@ def sloptimize(code: str) -> SloptimizeResult:
     )
 
 
-weave.init("sloptimize")
+# weave.init("sloptimize")
