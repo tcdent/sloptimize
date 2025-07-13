@@ -14,6 +14,8 @@ dependencies = [
     "rich>=13.0.0",
     "fastmcp>=2.0.0",
     "weave>=0.51.56",
+    "python-daemon>=3.0.0",
+    "gitpython>=3.1.0",
 ]
 
 [build-system]
@@ -25,6 +27,10 @@ where = ["src"]
 
 [tool.setuptools.package-dir]
 "" = "src"
+
+[project.scripts]
+sloptimize-api = "sloptimize.api:main"
+sloptimize-worker = "sloptimize.worker.daemon:main"
 
 [project.optional-dependencies]
 dev = [
