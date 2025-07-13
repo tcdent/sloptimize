@@ -6,11 +6,10 @@ from ..main import (
 from ..environment import MCP_HOST, MCP_PORT
 
 __all__ = [
-    "app",
+    "start_mcp_server",
 ]
 
 mcp = FastMCP("Sloptimize")
-app = mcp.app
 
 mcp.tool(
     sloptimize,
