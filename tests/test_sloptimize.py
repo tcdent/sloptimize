@@ -15,7 +15,7 @@ from sloptimize.utils import print_sloptimize_result
 def setup_module():
     """Print LLM provider and model info for all tests"""
     from sloptimize.environment import LLM_PROVIDER, OPENAI_MODEL, GROK_MODEL
-    
+
     print(f"\n🤖 Running tests with LLM provider: {LLM_PROVIDER}")
     if LLM_PROVIDER == "openai":
         print(f"📝 Using OpenAI model: {OPENAI_MODEL}")
@@ -320,7 +320,7 @@ class GrokClient:
 
 def test_nested_loops_inefficient():
     """Test optimization of nested loops that could be improved"""
-    code = '''
+    code = """
 def find_common_elements(list1, list2):
     common = []
     for item1 in list1:
@@ -328,14 +328,14 @@ def find_common_elements(list1, list2):
             if item1 == item2 and item1 not in common:
                 common.append(item1)
     return common
-    '''
+    """
     result = sloptimize(code)
     print_sloptimize_result(result)
 
 
 def test_string_concatenation_inefficient():
     """Test optimization of inefficient string concatenation"""
-    code = '''
+    code = """
 def build_query_string(params):
     query = ""
     for key in params:
@@ -343,34 +343,34 @@ def build_query_string(params):
             query = query + "&"
         query = query + str(key) + "=" + str(params[key])
     return query
-    '''
+    """
     result = sloptimize(code)
     print_sloptimize_result(result)
 
 
 def test_exception_handling_poor():
     """Test improvement of overly broad exception handling"""
-    code = '''
+    code = """
 def process_user_data(data):
     try:
         user_id = int(data["id"])
         email = data["email"].lower().strip()
         age = int(data["age"])
-        
+
         if age < 0:
             raise ValueError("Age cannot be negative")
-            
+
         return {"id": user_id, "email": email, "age": age}
     except:
         return None
-    '''
+    """
     result = sloptimize(code)
     print_sloptimize_result(result)
 
 
 def test_database_query_n_plus_one():
     """Test optimization of N+1 query pattern"""
-    code = '''
+    code = """
 def get_users_with_posts(user_ids):
     users = []
     for user_id in user_ids:
@@ -379,18 +379,18 @@ def get_users_with_posts(user_ids):
         user["posts"] = posts
         users.append(user)
     return users
-    '''
+    """
     result = sloptimize(code)
     print_sloptimize_result(result)
 
 
 def test_memory_inefficient_list_processing():
     """Test optimization of memory-inefficient list processing"""
-    code = '''
+    code = """
 def process_large_dataset(filename):
     with open(filename, 'r') as f:
         lines = f.readlines()
-    
+
     processed = []
     for line in lines:
         if line.strip():
@@ -401,16 +401,16 @@ def process_large_dataset(filename):
                     'value': float(parts[1]),
                     'category': parts[2].strip()
                 })
-    
+
     return processed
-    '''
+    """
     result = sloptimize(code)
     print_sloptimize_result(result)
 
 
 def test_regex_compilation_in_loop():
     """Test optimization of regex compilation inside loops"""
-    code = '''
+    code = """
 import re
 
 def validate_emails(email_list):
@@ -420,14 +420,14 @@ def validate_emails(email_list):
         if re.match(pattern, email):
             valid_emails.append(email)
     return valid_emails
-    '''
+    """
     result = sloptimize(code)
     print_sloptimize_result(result)
 
 
 def test_django_orm_inefficient():
     """Test optimization of inefficient Django ORM usage"""
-    code = '''
+    code = """
 def get_article_data(article_ids):
     articles = []
     for article_id in article_ids:
@@ -435,23 +435,23 @@ def get_article_data(article_ids):
         author = article.author
         category = article.category
         comment_count = article.comments.count()
-        
+
         articles.append({
             'title': article.title,
             'author': author.name,
             'category': category.name,
             'comment_count': comment_count
         })
-    
+
     return articles
-    '''
+    """
     result = sloptimize(code)
     print_sloptimize_result(result)
 
 
 def test_async_function_inefficient():
     """Test optimization of inefficient async function"""
-    code = '''
+    code = """
 import asyncio
 import aiohttp
 
@@ -463,14 +463,14 @@ async def fetch_user_profiles(user_ids):
                 profile = await response.json()
                 profiles.append(profile)
     return profiles
-    '''
+    """
     result = sloptimize(code)
     print_sloptimize_result(result)
 
 
 def test_dict_comprehension_opportunity():
     """Test code that could benefit from dict comprehension"""
-    code = '''
+    code = """
 def transform_config(raw_config):
     config = {}
     for key in raw_config:
@@ -479,14 +479,14 @@ def transform_config(raw_config):
         elif isinstance(raw_config[key], (int, float)):
             config[key.upper()] = raw_config[key]
     return config
-    '''
+    """
     result = sloptimize(code)
     print_sloptimize_result(result)
 
 
 def test_enum_if_statements():
     """Test optimization of if/elif statements over enum values"""
-    code = '''
+    code = """
 def process_request(request_status, request_data):
     if request_status == Status.PENDING:
         return {"message": "Request is pending review", "next_action": "wait"}
@@ -498,6 +498,92 @@ def process_request(request_status, request_data):
         return {"message": "Request cancelled", "next_action": "none"}
     else:
         return {"message": "Unknown status", "next_action": "error"}
+    """
+    result = sloptimize(code)
+    print_sloptimize_result(result)
+
+
+def test_another_worker():
+    # fmt: off
+    code = '''
+import multiprocessing
+import time
+import signal
+import sys
+from typing import Callable, Any, Optional
+
+
+class Worker:
+    """A class that implements a worker process which accepts a callback function."""
+    def __init__(self, target_function: Callable[[], Any], poll_interval: float = 1.0):
+        self.target_function = target_function
+        self.poll_interval = poll_interval
+        self.worker_process: Optional[multiprocessing.Process] = None
+        self.running = False
+
+    def _worker_loop(self):
+        signal.signal(signal.SIGTERM, self._signal_handler)
+        signal.signal(signal.SIGINT, self._signal_handler)
+
+        while True:
+            try:
+            # Call target function.
+                self.target_function()
+                time.sleep(self.poll_interval)
+            except KeyboardInterrupt:
+                break
+            except Exception as e:
+                # Handle exceptions in worker process.
+                print(f"Error in worker process: {e}")
+                time.sleep(self.poll_interval)
+
+    def _signal_handler(self, signum, frame):
+        sys.exit(0)
+
+    def start(self):
+        if self.running:
+            raise RuntimeError("Worker is already running")
+
+        # Start the worker process.
+        self.worker_process = multiprocessing.Process(target=self._worker_loop)
+        self.worker_process.start()
+        self.running = True
+        print(f"Worker process started with PID: {self.worker_process.pid}")
+
+    def stop(self):
+        if not self.running or not self.worker_process:
+            return
+
+        # Terminate the worker process gracefully.
+        self.worker_process.terminate()
+        self.worker_process.join(timeout=5)
+
+        if self.worker_process.is_alive():
+            self.worker_process.kill()
+            self.worker_process.join()
+
+        self.running = False
+        print("Worker process stopped")
+
+    def is_alive(self):
+        return self.running and self.worker_process and self.worker_process.is_alive()
+
+
+if __name__ == "__main__":
+    def example_function():
+        print(f"Polling at {time.strftime('%Y-%m-%d %H:%M:%S')}")
+
+    worker = Worker(example_function, poll_interval=2.0)
+
+    try:
+        worker.start()
+        time.sleep(10)
+        worker.stop()
+    except KeyboardInterrupt:
+        worker.stop()
     '''
     result = sloptimize(code)
     print_sloptimize_result(result)
+    # write the result to a temp file:
+    with open("temp.py", "w") as f:
+        f.write(result.source_code)
