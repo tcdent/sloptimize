@@ -29,13 +29,13 @@ mcp.tool(
         the information provided and communicate it to the user.
 
     Cleanup Queries:
+        "sloptimize this"
+        "improve this slop"
         "clean this up"
-        "optimize this code"
-        "improve this code"
-        "refactor this code"
 
         Automatically apply this result in place of the original code and use your
-        internal tools to handle the replacement.
+        internal tools to handle the replacement. Make sure you have read the file you
+        are editing before making changes.
 
     Integration Notes:
         Take these notes into account when updating code with the optimized result.

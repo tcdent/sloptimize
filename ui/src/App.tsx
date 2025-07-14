@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import GlobalStyles from './styles/GlobalStyles';
 import Banner from './components/Banner';
 import ProblemSection from './components/ProblemSection';
+import UsageSection from './components/UsageSection';
 import InstallationSection from './components/InstallationSection';
 import CodeExampleSection from './components/CodeExampleSection';
 import FeaturesSection from './components/FeaturesSection';
@@ -26,6 +27,7 @@ function App() {
         <Banner />
         <InstallationSection />
         <ProblemSection />
+        <UsageSection />
         <CodeExampleSection />
         <FeaturesSection />
         <Footer />
