@@ -1,0 +1,19 @@
+[Unit]
+Description=Sloptimize Worker Daemon
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/admin/sloptimize
+Environment=PATH=/home/admin/sloptimize/.venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+EnvironmentFile=/home/admin/sloptimize/.env
+ExecStart=/home/admin/sloptimize/.venv/bin/python /home/admin/sloptimize/scripts/run_worker_daemon.py
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
